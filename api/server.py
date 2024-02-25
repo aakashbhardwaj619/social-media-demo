@@ -14,11 +14,18 @@ def get_comments():
     parentID = request.args.get('ParentID')
     N = request.args.get('N')
     # Returning an api for showing in  reactjs
-    return {
+    return [
+        {
         'PostID':postID, 
         "ParentId":parentID,
         "Content":"Sample Comment"
+        },
+        {
+        'PostID':postID, 
+        "ParentId":parentID,
+        "Content":"Sample Comment 2"
         }
+    ]
 
 @app.route('/getLikesOrDislikes', methods=['GET'])
 def get_likes_or_dislikes():

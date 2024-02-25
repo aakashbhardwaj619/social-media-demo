@@ -1,61 +1,37 @@
 import React, { useState, useEffect } from 'react';
+import { getLikesOrDislikes, addLikesOrDislikes } from '../src/utils/likesDislikes';
+import { addReply } from '../src/utils/comments';
 import './App.css';
+import Comment from './Comment';
 
 function App() {
-  const [comments, setComments] = useState(0);
+  const [comments, setComments] = useState([]);
   const [likesContent, setLikesContent] = useState([]);
   const [commentBoxVisible, setCommentBoxVisible] = useState(false);
 
-  const params = new URLSearchParams({
-    'PostID': '1',
-    'ParentID': 'NULL',
-    'N': 1
-  });
-
   useEffect(() => {
+    const params = new URLSearchParams({
+      'PostID': '1',
+      'ParentID': 'NULL',
+      'N': 1
+    });
+
     fetch(`http://127.0.0.1:5000/getComments?${params}`, {
       method: 'GET',
       headers: { 'ContentType': 'application/json' },
 
     }).then(res => res.json()).then(data => {
       setComments(data);
-      console.log('data', data);
     });
   }, []);
 
-  const getLikesOrDislikes = (type) => {
+  const getLikesOrDislikesForPost = (type) => {
     resetState();
     openDialog();
-    const likeDislikeParams = new URLSearchParams({
-      'ParentID': '1',
-      'Type': type
-    });
-    fetch(`http://127.0.0.1:5000/getLikesOrDislikes?${likeDislikeParams}`, {
-      method: 'GET',
-      headers: { 'ContentType': 'application/json' },
-    }).then(res => res.json()).then(data => {
+    getLikesOrDislikes(type).then(data => {
       setLikesContent(data);
       console.log('likedata', data);
     });
-  };
-
-  const addLikesOrDislikes = (type) => {
-    const requestBody = {
-      'ParentID': '1',
-      'Type': type,
-      'UserName': 'Myra Bhardwaj'
-    };
-    fetch(`http://127.0.0.1:5000/addLikeOrDislike`, {
-      method: 'POST',
-      headers: { 'ContentType': 'application/json' },
-      //body: JSON.stringify(requestBody)
-    }).then(res => res.json()).then(data => {
-      console.log('likedata', data);
-    });
-  };
-
-  const addReply = () => {
-
   };
 
   const openDialog = () => {
@@ -72,6 +48,7 @@ function App() {
     setLikesContent([]);
     setCommentBoxVisible(false);
   };
+
   return (
     <div className="App">
       <header className="App-header">
@@ -82,10 +59,10 @@ function App() {
           <div className="Post-action-item" onClick={() => setCommentBoxVisible(true)}>
             Add Reply
           </div>
-          <div className="Post-action-item" onClick={() => getLikesOrDislikes(1)}>
+          <div className="Post-action-item" onClick={() => getLikesOrDislikesForPost(1)}>
             View likes
           </div>
-          <div className="Post-action-item" onClick={() => getLikesOrDislikes(0)}>
+          <div className="Post-action-item" onClick={() => getLikesOrDislikesForPost(0)}>
             View dislikes
           </div>
           <div className="Post-action-item" onClick={() => addLikesOrDislikes(1)}>
@@ -100,6 +77,11 @@ function App() {
             <textarea rows={3} style={{ width: '100%' }} />
             <button onClick={addReply}>Submit</button>
           </div>
+        }
+        {comments.length > 0 &&
+          comments.map((comment) => (
+            <Comment comment={comment} />
+          ))
         }
         <dialog>
           <button autofocus onClick={closeDialog}>Close</button>

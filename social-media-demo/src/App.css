@@ -18,7 +18,7 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  /* align-items: center; */
   /* justify-content: center; */
   font-size: calc(10px + 2vmin);
   color: white;
@@ -37,12 +37,21 @@
 .Post-action-item {
   color:aqua;
   width: 33%;
+  font-size: medium;
 }
 
 .Post-comment-box {
   width: 100%;
+}
 
-  
+.Post-comments-section {
+  margin-top: 2vw;
+  font-size: large;
+}
+
+.Post-comment-body {
+  min-height: 3vw;
+  background-color:cadetblue;
 }
 
 .App-link {
