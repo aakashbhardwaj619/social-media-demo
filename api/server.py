@@ -3,9 +3,10 @@ from flask_cors import CORS
 
 # Initializing flask app
 app = Flask(__name__)
-CORS(app, origins="*")
+cors = CORS(app, resources={r"/*": {"origins": "*"}})
 
- 
+#CORS(app)
+
 # Route for seeing a data
 @app.route('/getComments', methods=['GET'])
 def get_comments():
@@ -34,13 +35,13 @@ def get_likes_or_dislikes():
 
 @app.route('/addComment', methods=['POST'])
 def add_comment():
-    print(request.get_json())
+    print(request.data)
     return 204
 
 @app.route('/addLikeOrDislike', methods=['POST'])
 def add_like_or_dislike():
-    print(request.get_json())
-    return 204
+    print(request.data)
+    return {"status": "202"}
      
 # Running app
 if __name__ == '__main__':

@@ -4,6 +4,7 @@ import './App.css';
 function App() {
   const [comments, setComments] = useState(0);
   const [likesContent, setLikesContent] = useState([]);
+  const [commentBoxVisible, setCommentBoxVisible] = useState(false);
 
   const params = new URLSearchParams({
     'PostID': '1',
@@ -22,7 +23,8 @@ function App() {
     });
   }, []);
 
-  const getLikes = (type) => {
+  const getLikesOrDislikes = (type) => {
+    resetState();
     openDialog();
     const likeDislikeParams = new URLSearchParams({
       'ParentID': '1',
@@ -37,6 +39,25 @@ function App() {
     });
   };
 
+  const addLikesOrDislikes = (type) => {
+    const requestBody = {
+      'ParentID': '1',
+      'Type': type,
+      'UserName': 'Myra Bhardwaj'
+    };
+    fetch(`http://127.0.0.1:5000/addLikeOrDislike`, {
+      method: 'POST',
+      headers: { 'ContentType': 'application/json' },
+      //body: JSON.stringify(requestBody)
+    }).then(res => res.json()).then(data => {
+      console.log('likedata', data);
+    });
+  };
+
+  const addReply = () => {
+
+  };
+
   const openDialog = () => {
     const dialog = document.querySelector("dialog");
     dialog.showModal();
@@ -46,6 +67,11 @@ function App() {
     const dialog = document.querySelector("dialog");
     dialog.close();
   }
+
+  const resetState = () => {
+    setLikesContent([]);
+    setCommentBoxVisible(false);
+  };
   return (
     <div className="App">
       <header className="App-header">
@@ -53,36 +79,42 @@ function App() {
           Nunc mattis ullamcorper tincidunt. Integer quis sodales dolor, semper dignissim turpis. Ut in sem hendrerit, posuere magna ut, cursus sem. Aliquam nec convallis enim. Donec sagittis malesuada lacus, ac blandit tellus luctus non. Donec luctus lorem lorem, at congue nulla aliquam at. Proin semper lectus at consequat ullamcorper. Sed lacinia dictum felis, cursus molestie neque mattis ac. Mauris pulvinar diam ac pharetra efficitur.
         </div>
         <div className="Post-actions">
-          <div className="Post-action-item">
+          <div className="Post-action-item" onClick={() => setCommentBoxVisible(true)}>
             Add Reply
           </div>
-          <div className="Post-action-item" onClick={() => getLikes(1)}>
+          <div className="Post-action-item" onClick={() => getLikesOrDislikes(1)}>
             View likes
           </div>
-          <div className="Post-action-item" onClick={() => getLikes(0)}>
+          <div className="Post-action-item" onClick={() => getLikesOrDislikes(0)}>
             View dislikes
           </div>
-          <div className="Post-action-item">
+          <div className="Post-action-item" onClick={() => addLikesOrDislikes(1)}>
             Add Like
           </div>
-          <div className="Post-action-item">
+          <div className="Post-action-item" onClick={() => addLikesOrDislikes(0)}>
             Add Dislike
           </div>
         </div>
+        {commentBoxVisible &&
+          <div className="Post-comment-box">
+            <textarea rows={3} style={{ width: '100%' }} />
+            <button onClick={addReply}>Submit</button>
+          </div>
+        }
         <dialog>
           <button autofocus onClick={closeDialog}>Close</button>
           {likesContent &&
-          <ul>
-            {likesContent.map((user) => (
-              <li>
-                {user.UserName}
-              </li>
-            ))}
-          </ul>
-        }
+            <ul>
+              {likesContent.map((user) => (
+                <li>
+                  {user.UserName}
+                </li>
+              ))}
+            </ul>
+          }
         </dialog>
 
-        
+
       </header>
 
     </div>
